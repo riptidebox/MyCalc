@@ -8,28 +8,25 @@ public class FinishCalculatorApp {
 
     private JComboBox<String> comboWorkType;
     private JLabel labelArea;
-    private JTextField areaInput;
-    private JComboBox<String> comboCeilingType; // Новое поле для выбора типа потолка
-    private JComboBox<String> comboWallWorkType; // Новое поле для выбора типов работ со стенами
-    private JCheckBox checkboxElectrical; // Новое поле для выбора наличия электрики
-    private JCheckBox checkboxPlumbing; // Новое поле для выбора наличия сантехники
-    private JComboBox<String> comboFloorType; // Новое поле для выбора типа полов
-    private JLabel labelOutput;
-    private JButton calculateButton;
+    JTextField areaInput;
+    JComboBox<String> comboCeilingType;
+    JComboBox<String> comboWallWorkType;
+    JCheckBox checkboxElectrical;
+    JCheckBox checkboxPlumbing;
+    JComboBox<String> comboFloorType;
+    JLabel labelOutput;
+    JButton calculateButton;
     private JButton exitButton;
 
     public FinishCalculatorApp() {
-        // Создаем JFrame
         JFrame frame = new JFrame("Калькулятор отделочных работ");
-        frame.setSize(400, 300); // Увеличим высоту фрейма для учета новых компонентов
+        frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Создаем JPanel
         JPanel panel = new JPanel();
         frame.add(panel);
         разместитьКомпоненты(panel);
 
-        // Устанавливаем видимость фрейма
         frame.setVisible(true);
     }
 
@@ -103,7 +100,7 @@ public class FinishCalculatorApp {
         panel.add(labelOutput);
     }
 
-    private class CalculateListener implements ActionListener {
+    class CalculateListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String selectedWorkType = (String) comboWorkType.getSelectedItem();
@@ -111,48 +108,55 @@ public class FinishCalculatorApp {
 
             if (isValidInput(areaInputText)) {
                 double area = Double.parseDouble(areaInputText);
-
-                String selectedCeilingType = (String) comboCeilingType.getSelectedItem();
-                String selectedWallWorkType = (String) comboWallWorkType.getSelectedItem();
-                boolean hasElectrical = checkboxElectrical.isSelected();
-                boolean hasPlumbing = checkboxPlumbing.isSelected();
-                String selectedFloorType = (String) comboFloorType.getSelectedItem();
-
-                double ratePerSquareMeter = 25.0;
-                double totalCost = ratePerSquareMeter * area;
-
-                // Учет выбранных параметров для расчета стоимости
-                if ("Гипсокартон".equals(selectedCeilingType)) {
-                    totalCost += 5.0 * area; // Пример: добавляем 5 рублей за квадратный метр гипсокартона
-                }
-
-                if ("Обои".equals(selectedWallWorkType)) {
-                    totalCost += 3.0 * area; // Пример: добавляем 3 рубля за квадратный метр работ по обоям
-                }
-
-                if (hasElectrical) {
-                    totalCost += 1000.0; // Пример: добавляем фиксированную стоимость за электрику
-                }
-
-                if (hasPlumbing) {
-                    totalCost += 1500.0; // Пример: добавляем фиксированную стоимость за сантехнику
-                }
-
-                if ("Ламинат".equals(selectedFloorType)) {
-                    totalCost += 8.0 * area; // Пример: добавляем 8 рублей за квадратный метр ламината
-                }
+                double totalCost = calculateTotalCost(area);
 
                 labelOutput.setText("Общая стоимость: " + totalCost + " руб.");
             } else {
-                JOptionPane.showMessageDialog(null, "Введите корректное значение для площади.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                showErrorDialog("Введите корректное значение для площади.");
             }
         }
 
+        private double calculateTotalCost(double area) {
+            double ratePerSquareMeter = 25.0;
+            double totalCost = ratePerSquareMeter * area;
+
+            String selectedCeilingType = (String) comboCeilingType.getSelectedItem();
+            String selectedWallWorkType = (String) comboWallWorkType.getSelectedItem();
+            boolean hasElectrical = checkboxElectrical.isSelected();
+            boolean hasPlumbing = checkboxPlumbing.isSelected();
+            String selectedFloorType = (String) comboFloorType.getSelectedItem();
+
+            if ("Гипсокартон".equals(selectedCeilingType)) {
+                totalCost += 5.0 * area;
+            }
+
+            if ("Обои".equals(selectedWallWorkType)) {
+                totalCost += 3.0 * area;
+            }
+
+            if (hasElectrical) {
+                totalCost += 1000.0;
+            }
+
+            if (hasPlumbing) {
+                totalCost += 1500.0;
+            }
+
+            if ("Ламинат".equals(selectedFloorType)) {
+                totalCost += 8.0 * area;
+            }
+
+            return totalCost;
+        }
+
         private boolean isValidInput(String input) {
-            return !input.isEmpty() && input.matches("^[0-9]+(\\.[0-9]+)?$");
+            return input.matches("^[0-9]+(\\.[0-9]+)?$");
+        }
+
+        private void showErrorDialog(String message) {
+            JOptionPane.showMessageDialog(null, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     private class ExitListener implements ActionListener {
         @Override
